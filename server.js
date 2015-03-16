@@ -13,7 +13,7 @@ var __cache_rebuild = [];
 
 
 var __SETTINGS = [];
-__SETTINGS['CACHE_RECHED_TIMEOUT'] = 30; //miliseconds
+__SETTINGS['CACHE_RECHECK_TIMEOUT'] = 30; //miliseconds
 __SETTINGS['CACHE_REBUILD_ARRAY_MAX_SIZE'] = 5000; //entries of array
 __SETTINGS['CALC_RPS_EACH_N_REQUESTS'] = 300; //print stats each 300 requests
 __SETTINGS['PAGE_EXPIRE_SECONDS'] = 100;
@@ -93,7 +93,7 @@ function getPageFromStorage(page_path, callback){
 
 function buildCache(page_path, page_key, callback){
 	if( __cache_rebuild[page_key] == true ) {
-		setTimeout(__SETTINGS['CACHE_RECHED_TIMEOUT'], buildCache, page_path, page_key, callback);
+		setTimeout(__SETTINGS['CACHE_RECHECK_TIMEOUT'], buildCache, page_path, page_key, callback);
 		return;
 	}
 
