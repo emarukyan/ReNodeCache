@@ -1,0 +1,12 @@
+{
+  "name": "nodecache",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "nodejs ./server.js"
+  },
+  "dependencies": {
+    "async": "0.9.0"
+  }
+}
+
