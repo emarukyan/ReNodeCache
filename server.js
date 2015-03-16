@@ -62,9 +62,10 @@ function processRequest(request, response) {
 		var hostname = getHostName(request.headers.host);
 
 		var page_path = "http://" + hostname + url_parts.path;
+		consolog('\nPage Request: ' + page_path)
 		getPage(page_path, function(err, content){
 			response.writeHead(200, {'Content-Type': 'text/html'});
-			response.end(content);
+			response.end(content || '');
 		});
 	} else if(request.method == "POST") {
 		response.end('');
@@ -74,14 +75,17 @@ function processRequest(request, response) {
 
 function getPageFromStorage(page_path, callback){
 	//Ask page from storage!
-	consolog('Asking from storage');
+	consolog('Asking from storage: ' + page_path);
 	__ask_storage++;
 
 	var storage_request = require('request');
 	storage_request(page_path, function (error, storage_response, body) {
 		if (!error && storage_response.statusCode == 200) {
+			consolog('Got response from storage:' + storage_response.statusCode)
 			callback(null, body);
 		}else{
+			consolog('Error from storage')
+			consolog(error)
 			callback(error, '');
 		}
 	});
@@ -118,18 +122,26 @@ function getPage(page_path, maincallback){
 				if( redis_reply == null ) {
 					//No cache, ask from storage
 					consolog('Cache empty for page: ' + page_path);
-					buildCache(page_path, page_key, callback);
+					buildCache(page_path, page_key, function(err, content){
+						consolog('Chache is built');
+						callback(err, content);
+					});
 				}else{
 					//page cache exists
+					consolog('Page cached: ' + page_path);
 					callback(null, redis_reply);
 				}
 			})
 		},
-		function(err, page_content, callback){
-			maincallback(err, page_content);
-			callback()
+	], function(err, page_content){
+		if (err ) {
+			consolog("getPage: Waterfall: ERROR")
+			consolog(err)
+		}else{
+			consolog("Success: page content")
 		}
-	])
+		maincallback(err, page_content);
+	})
 }
 
 
